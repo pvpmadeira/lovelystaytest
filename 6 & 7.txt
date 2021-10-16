@@ -1,0 +1,5 @@
+6. to have a list of languages liked by each user, since it is a many to many relationship, it would be best to create a junction table with every language with the 2 primary keys from the user and the language
+The query would be  "SELECT login FROM github_users WHERE location = 'given location' AND language = 'language preference';"
+
+7.when the tables become too big/acesses too slow, what woulçd improve the speed to acess would depend on how we want to use the tables, for example creating an index on the login field would help on acesses since logins would be ordered alphabetically and we could then optimise queries to not have to read every record, just find the first which is correct, then return every row that isnt different from that first one, and stop reading after the first that is different.
+another idea, although a bit unrealistic in practice, would be to use spatial indexes on location acesses, where users around the world would have their location turned into GEOGRAPHY SQL data types, and with those we could use quad trees to speed up acesses to location related queries.
