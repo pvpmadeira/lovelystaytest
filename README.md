@@ -12,4 +12,5 @@ Challenge 2:
 3. Added a location and a bio field, which can both be called from the same uri as the login
 4. Added the UNIQUE statement to the login field, so only users couldnt be added more than once.
 5. To process the desired query, utilized the manyOrNone function which, and then utilised the then and catch funcionalities to log the result and deal with errors. Added the listUsers script to the json file to process this funcionality.
-6 & 7. in detail on the file of the same name.
+
+  6 & 7. in detail on the file of the same name.
