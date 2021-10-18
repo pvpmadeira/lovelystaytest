@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "node ./node_modules/ts-node/dist/bin.js server.ts",
-    "listUsers": "node ./node_modules/ts-node/dist/bin.js server.ts list"
+    "listUsers": "node ./node_modules/ts-node/dist/bin.js server.ts list",
+    "languagePref": "node ./node_modules/ts-node/dist/bin.js server.ts pref",
+    "addLanguage": "node ./node_modules/ts-node/dist/bin.js server.ts add"
   },
   "keywords": [
     "github",
