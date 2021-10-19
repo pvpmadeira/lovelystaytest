@@ -70,7 +70,7 @@ if(process.argv[2] == "list"){
 .catch(error => console.error(error))
 .finally(() => process.exit(0));
 
-// adds 1 or more language preferences to a user
+// adds language preference to a user
 }else if(process.argv[2] == "add"){
 
     addPreference("'" + process.argv[3] + "'", "'" + process.argv[4] + "'")
