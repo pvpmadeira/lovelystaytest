@@ -1,5 +1,3 @@
-import { isExpressionWithTypeArguments } from "typescript";
-
 const pgPromise = require('pg-promise');
 const R         = require('ramda');
 const request   = require('request-promise');
