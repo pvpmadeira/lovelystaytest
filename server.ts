@@ -45,8 +45,6 @@ interface GithubUsers
   { id : number
   };
 
-// CREATE INDEX github_users_idx_location_login ON github_users (location,login);
-// CREATE INDEX language_prefs_idx_language_login ON language_prefs (language,login);
 
 const pgp = pgPromise(pgpDefaultConfig);
 const db = pgp(options);
