@@ -1,3 +1,5 @@
+
+
 const pgPromise = require('pg-promise');
 const R         = require('ramda');
 const request   = require('request-promise');
@@ -28,6 +30,7 @@ console.info('Connecting to the database:',
 
 const pgpDefaultConfig = {
   promiseLib: require('bluebird'),
+
   // Log all querys
   query(query) {
     console.log('[SQL   ]', R.take(trimLogsSize,query.query));
@@ -41,6 +44,7 @@ const pgpDefaultConfig = {
   }
 };
 
+
 interface GithubUsers
   { id : number
   };
@@ -48,11 +52,12 @@ interface GithubUsers
 
 const pgp = pgPromise(pgpDefaultConfig);
 const db = pgp(options);
+
 var listUsersByLocation = (location) => db.manyOrNone('SELECT login from github_users WHERE location = ' + location + ';');
 var listUsersByLanguage = (location, language) => db.manyOrNone('SELECT u.login FROM github_users u, language_prefs l  WHERE u.location = ' + location + ' AND l.language = ' + language + ' AND u.login = l.login;');
-var addPreference = (login, language) => db.none('INSERT INTO language_prefs (login, language) VALUES (' + login + ',' + language + ')');
+var addPreference = (login, language) => db.none('INSERT INTO language_prefs VALUES (id, ' + language + ') SELECT id FROM github_users WHERE login = '+ login +';');
 
-// when running the list command lists users
+
 if(process.argv[2] == "list"){
 
   listUsersByLocation("'" + process.argv[3] + "'") // reads argument using it for user location search
@@ -68,7 +73,7 @@ if(process.argv[2] == "list"){
 .catch(error => console.error(error))
 .finally(() => process.exit(0));
 
-// adds language preference to a user
+// adds 1 or more language preferences to a user
 }else if(process.argv[2] == "add"){
 
     addPreference("'" + process.argv[3] + "'", "'" + process.argv[4] + "'")
@@ -77,10 +82,11 @@ if(process.argv[2] == "list"){
 
 }else{
   // IF NOT EXISTS - allows for multiple test runs without complaint that table already exists
-  db.none('CREATE TABLE IF NOT EXISTS github_users (id BIGSERIAL, login TEXT UNIQUE, name TEXT, company TEXT, bio TEXT, location TEXT, PRIMARY KEY (ID))')
-.then(db.none('CREATE INDEX orderedLogin ON github_users (login);'))
-.then(db.none('CREATE TABLE IF NOT EXISTS language_prefs (login TEXT NOT NULL, language TEXT, UNIQUE(login, language))')) 
-.then(() => request({  
+  db.none('CREATE TABLE IF NOT EXISTS github_users(id BIGSERIAL PRIMARY KEY, login TEXT UNIQUE NOT NULL, name TEXT, company TEXT, bio TEXT, location TEXT);')
+.then(db.none('CREATE TABLE IF NOT EXISTS language_prefs(id BIGSERIAL, language TEXT, UNIQUE(id, language), CONSTRAINT fk_id FOREIGN KEY (id) REFERENCES github_users(id));')) 
+// creates index around login field of github_users table
+.then(db.none('CREATE INDEX IF NOT EXISTS index0 ON github_users(login);'))
+.then(() => request({
 
   uri: 'https://api.github.com/users/' + process.argv[2],
   headers: {
@@ -88,7 +94,8 @@ if(process.argv[2] == "list"){
     },
   json: true
 })
-) // added extra field bio to be taken from git API
+) 
+// added extra field bio to be taken from git API
 .then((data: GithubUsers) =>  db.one(
   'INSERT INTO github_users (login, bio, location) VALUES ($[login], $[bio], $[location]) RETURNING id', data))
 .then(({id}) => console.log(id))
